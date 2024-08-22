@@ -1,0 +1,11 @@
+FROM openjdk:24-oracle AS build 
+LABEL dev="spg"
+WORKDIR /spring-petclinic
+RUN mkdir app && mvn clean package -DoutputDirectory=/app && mkdir bin logs
+FROM amazoncorretto:latest 
+RUN adduser -m /app -U -s bin/bash spc
+USER spc
+WORKDIR /app
+COPY --from=build --chown=spc:spc /app /app
+EXPOSE 8080
+CMD [ "java","-jar","spring-petclinic.jar"]

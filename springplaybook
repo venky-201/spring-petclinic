@@ -1,0 +1,64 @@
+- name: inastall java
+  host: local
+  become: yes
+  task: 
+   - name: java inastall 
+     ansible.builtin.apt:
+      name: 
+       - java-17-jdk
+       - maven
+       - git
+      state: present
+      update_cache: yes
+   - name: varification version 
+     ansible.builtin.command:
+       - maven --version
+       - java --version
+       - git --version
+       - mkdir java-project
+     register: result
+   - name: create group
+     ansible.builtin.group:
+      name: test 
+      state: present 
+   - name: create user
+     ansible.builtin.user:
+      name: test
+      home: java-project
+      shell: bin/bash
+      group: test
+      state: present
+     task:
+      - name: clone from git 
+        ansible.builtin.git:
+        repo: "https://github.com/spring-projects/spring-petclinic.git"
+        dest: "java-project"
+        clone: yes
+        update: yes
+        force: yes
+        version: n
+      - name: build java code
+        community.general.maven:
+        command: "mvn package"
+        chdir: "java-project/spring_petclinic"
+        state: present
+
+
+
+
+
+     
+   
+   
+    
+     
+    
+    
+         
+    
+           
+
+    
+       
+
+      
